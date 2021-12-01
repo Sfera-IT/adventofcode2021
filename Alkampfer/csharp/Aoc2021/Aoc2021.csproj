@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AoC2021.Extensions\AoC2021.Extensions.csproj" />
+    <ProjectReference Include="..\Aoc2021.Extensions\Aoc2021.Extensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
