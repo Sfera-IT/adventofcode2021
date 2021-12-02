@@ -22,7 +22,10 @@
     <None Update="AdventOfCode2021\Data\input1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="AdventOfCode2021\Data\expectedresults.txt">
+    <None Update="AdventOfCode2021\Data\input2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+        <None Update="AdventOfCode2021\Data\expectedresults.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
