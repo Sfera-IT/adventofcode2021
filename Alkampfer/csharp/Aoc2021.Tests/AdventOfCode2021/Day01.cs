@@ -23,7 +23,6 @@ namespace Aoc2021.Tests.AdventOfCode2021
                 .Skip(1)
                 .Count(val => val.Actual > val.Previous);
 
-            // do not cheat, this is the real result of the test :)
             Assert.That(result, Is.EqualTo(_expected1));
         }
 
@@ -40,7 +39,6 @@ namespace Aoc2021.Tests.AdventOfCode2021
                 .Agglomerate2()
                 .Count(val => val.Actual > val.Previous);
             
-            // do not cheat, this is the real result of the test :)
             Assert.That(result, Is.EqualTo(_expected2));
         }
     }
