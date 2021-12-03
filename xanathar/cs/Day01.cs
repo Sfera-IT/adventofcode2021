@@ -11,7 +11,7 @@ namespace Day01 {
     {
         public override void Run() {
             int count = 0;
-            var data = File.ReadAllLines("data/day1.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => int.Parse(s)).ToArray();
+            var data = File.ReadAllLines("../data/day1.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => int.Parse(s)).ToArray();
 
             for (int i = 0; i < data.Length; i++)
                 if (i != 0 && data[i] > data[i - 1]) count++;
@@ -24,7 +24,7 @@ namespace Day01 {
     {
         public override void Run() {
             int count = 0;
-            var data = File.ReadAllLines("data/day1.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => int.Parse(s)).ToArray();
+            var data = File.ReadAllLines("../data/day1.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => int.Parse(s)).ToArray();
 
             for (int i = 0; i < data.Length; i++)
                 if (i >= 3 && data[i] > data[i - 3]) count++;

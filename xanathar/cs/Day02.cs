@@ -42,7 +42,7 @@ namespace Day02
     {
         public override void Run()
         {
-            var data = File.ReadAllLines("data/day2.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => Command.Parse(s)).ToArray();
+            var data = File.ReadAllLines("../data/day2.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => Command.Parse(s)).ToArray();
 
             int depth = 0, pos = 0;
 
@@ -60,7 +60,7 @@ namespace Day02
     {
         public override void Run()
         {
-            var data = File.ReadAllLines("data/day2.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => Command.Parse(s)).ToArray();
+            var data = File.ReadAllLines("../data/day2.txt").Where(s => !string.IsNullOrEmpty(s)).Select(s => Command.Parse(s)).ToArray();
 
             int aim = 0, pos = 0, depth = 0;
 
