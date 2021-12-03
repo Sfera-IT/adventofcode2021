@@ -16,19 +16,13 @@ fn bytestr_to_num(data: &ByteStr, filter: fn(u8) -> u8) -> u32 {
     data.iter().fold(0u32, | res, i | (res << 1) | (filter(*i) as u32))
 }
 
-fn calc_common(data: &[ByteStr], column: usize, default: u8) -> u8
-{
-    let mut count0 = 0usize;
-    let mut count1 = 0usize;
-
-    for s in data.iter()
-    {
-        if s[column] == 1 {
-            count1 += 1;
+fn calc_common(data: &[ByteStr], column: usize, default: u8) -> u8 {
+    let (count0, count1) = data.iter().fold((0u32, 0u32),
+        |(c0, c1), s| if s[column] == 1 {
+            (c0, c1 + 1)
         } else {
-            count0 += 1;
-        }
-    }
+            (c0 + 1, c1)
+        });
 
     match count1.cmp(&count0) {
         std::cmp::Ordering::Greater => 1,
@@ -50,6 +44,7 @@ pub fn test1() {
 
     println!("g={}, e={}, g*e={}", gamma, epsil, gamma*epsil);
 }
+
 
 pub fn test2() {
     let mut o2data = utils::parse_lines("../data/day3.txt", parse_bytestr);

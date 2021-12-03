@@ -1,3 +1,5 @@
+# 🎅 🎄
+
 Felt bored with just C#, so tried to do them also in Rust, but then it's too much and for most exercises C# is faster so some days will be done in C#, others in Rust, others in both.
 
 # Days
@@ -7,28 +9,28 @@ Felt bored with just C#, so tried to do them also in Rust, but then it's too muc
 | Day  1 |  ✅|   ✅  |
 | Day  2 |  ✅|   ✅  |
 | Day  3 |  ✅|   ✅  |
-| Day  4 |  ⭕️|   ⭕️  |
-| Day  5 |  ⭕️|   ⭕️  |
-| Day  6 |  ⭕️|   ⭕️  |
-| Day  7 |  ⭕️|   ⭕️  |
-| Day  8 |  ⭕️|   ⭕️  |
-| Day  9 |  ⭕️|   ⭕️  |
-| Day 10 |  ⭕️|   ⭕️  |
-| Day 11 |  ⭕️|   ⭕️  |
-| Day 12 |  ⭕️|   ⭕️  |
-| Day 13 |  ⭕️|   ⭕️  |
-| Day 14 |  ⭕️|   ⭕️  |
-| Day 15 |  ⭕️|   ⭕️  |
-| Day 16 |  ⭕️|   ⭕️  |
-| Day 17 |  ⭕️|   ⭕️  |
-| Day 18 |  ⭕️|   ⭕️  |
-| Day 19 |  ⭕️|   ⭕️  |
-| Day 20 |  ⭕️|   ⭕️  |
-| Day 21 |  ⭕️|   ⭕️  |
-| Day 22 |  ⭕️|   ⭕️  |
-| Day 23 |  ⭕️|   ⭕️  |
-| Day 24 |  ⭕️|   ⭕️  |
-| Day 25 |  ⭕️|   ⭕️  |
+| Day  4 |  ⏳|   ⏳  |
+| Day  5 |  ⏳|   ⏳  |
+| Day  6 |  ⏳|   ⏳  |
+| Day  7 |  ⏳|   ⏳  |
+| Day  8 |  ⏳|   ⏳  |
+| Day  9 |  ⏳|   ⏳  |
+| Day 10 |  ⏳|   ⏳  |
+| Day 11 |  ⏳|   ⏳  |
+| Day 12 |  ⏳|   ⏳  |
+| Day 13 |  ⏳|   ⏳  |
+| Day 14 |  ⏳|   ⏳  |
+| Day 15 |  ⏳|   ⏳  |
+| Day 16 |  ⏳|   ⏳  |
+| Day 17 |  ⏳|   ⏳  |
+| Day 18 |  ⏳|   ⏳  |
+| Day 19 |  ⏳|   ⏳  |
+| Day 20 |  ⏳|   ⏳  |
+| Day 21 |  ⏳|   ⏳  |
+| Day 22 |  ⏳|   ⏳  |
+| Day 23 |  ⏳|   ⏳  |
+| Day 24 |  ⏳|   ⏳  |
+| Day 25 |  ⏳|   ⏳  |
 
 
 
