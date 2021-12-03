@@ -1,6 +1,7 @@
+with open("./2.txt") as f:
+    data = [l.strip().split(' ') for l in f.readlines() if l]
+
 def part1():
-    with open("./2.txt") as f:
-        data = [l.strip().split(' ') for l in f.readlines() if l]
     horizontal = 0
     depth = 0
     for k, v in data:
@@ -16,8 +17,6 @@ def part1():
 
 
 def part2():
-    with open("./2.txt") as f:
-        data = [l.strip().split(' ') for l in f.readlines() if l]
     horizontal = 0
     aim = 0
     depth = 0
