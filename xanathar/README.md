@@ -9,7 +9,7 @@ Felt bored with just C#, so tried to do them also in Rust, but then it's too muc
 | Day  1 |  ✅|   ✅  |
 | Day  2 |  ✅|   ✅  |
 | Day  3 |  ✅|   ✅  |
-| Day  4 |  ⏳|   ⏳  |
+| Day  4 |  ✅|   ❌  |
 | Day  5 |  ⏳|   ⏳  |
 | Day  6 |  ⏳|   ⏳  |
 | Day  7 |  ⏳|   ⏳  |
