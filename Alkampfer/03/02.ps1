@@ -20,13 +20,21 @@ $oxy = [System.Collections.ArrayList]$data
 $co2 = [System.Collections.ArrayList]$data
 # Ok cicle for each bit starting from leftmost to rightmost
 for ($i = 0; $i -lt 12; $i++) {
+
+    # Get the count of ones for each of the two arrays
     $oxyCountOfOnes = Get-CountOfOnes -array $oxy -position $i
     $co2CountOfOnes = Get-CountOfOnes -array $co2 -position $i
+
+    # Now remember that we have different rules for the two counter, for
+    # Oxygen we need to keep 1 if 1 is prevalent or equal zero otherwise
     if ($oxyCountOfOnes -ge $oxy.Count / 2) {
         Remove-NonCompatibleElement -arraylist $oxy -position $i -expected '1' 
     } else {
         Remove-NonCompatibleElement -arraylist $oxy -position $i -expected '0' 
     }
+
+    # Co2 rules are different, we need to get the less prevalent, and if they
+    # are equal we need to keep 0
     if ($co2CountOfOnes -ge $co2.Count / 2) {
         Remove-NonCompatibleElement -arraylist $co2 -position $i -expected '0' 
     } else {

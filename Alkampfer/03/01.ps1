@@ -1,5 +1,4 @@
 $dataLines = Get-Content './input.txt'
-$lines = $dataLines.Length
 $data = $dataLines | Join-String
 $counter = [int[]]::new(12);
 
