@@ -76,7 +76,7 @@ def main():
     boards = setup_boards(boards)
 
     winner = play_game(numbers, boards)
-    print(f"Winner: {winner}")
+    print(f"Winner score: {winner}")
    
 
 # Convert the boards into a 2D array of numbers
@@ -98,28 +98,18 @@ def setup_boards(boards_raw: list) -> list:
     return boards
 
 def play_game(numbers: list, boards: list) -> int:
-    # while len(numbers) > 0:
-    # draw = numbers.pop(0)
-    # print(f"Drawn:\t{draw}")
-    # for board in boards:
-    #     if board[draw] == False:
-    #         board[draw] = True
-    #         print(f"\t{board}")
-    #         exit()
-
     # Play the game
-    for i, num in enumerate(numbers):
-        print(f"Drawn:\t{num}")
+    last_victorious_draw = None
+    for num in numbers:
+        print(f"\nDrawn:\t{num}")
         update_boards(num, boards)
 
-        winner = check_for_winner(boards)
-        if i > 4 and winner:
-            return get_score(winner, int(num))
-
-    # # Find the winning board
-    # for board in boards:
-    #     if is_winner(board):
-    #         return get_score(board)
+        for winner in check_for_winner(boards):
+            last_victorious_draw = int(num)
+            boards.remove(winner)
+    
+    # Last winner
+    return get_score(winner, last_victorious_draw)
 
 def update_boards(num: int, boards: list):
     for board in boards:
@@ -131,10 +121,9 @@ def check_for_winner(boards: list):
     for board in boards:
         if is_winner(board):
             print(f"Winner:\t{board}")
-            return board
+            yield board
 
-    print("No winner")
-    return False
+    return None
 
 def is_winner(board: list) -> bool:
     # Check for a row
@@ -145,14 +134,6 @@ def is_winner(board: list) -> bool:
     for col in range(len(board[0])):
         if all([list(row.values())[col] for row in board]):
             return True
-    # Check for a diagonal
-    # values = []
-    # for y, row in enumerate(board):
-    #     for x, col in enumerate(list(row.values())):
-    #         if y == x:
-    #             values.append(col)
-    # if all(values):
-    #     return True
 
     return False
 
