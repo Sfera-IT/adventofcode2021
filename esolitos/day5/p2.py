@@ -1,7 +1,6 @@
 from os import path
 import numpy as np
-from scipy import stats
-from bitstring import BitArray
+import sys
 
 # --- Day 5: Hydrothermal Venture ---
 # 
@@ -91,10 +90,12 @@ def main():
     tot = matrix[matrix > 1].shape[0]
     print("Total: {}".format(tot))
 
-    import matplotlib.pyplot as plt
-    plt.matshow(matrix)
-    plt.colorbar()
-    plt.show()
+    if "--show" in sys.argv:    
+        import matplotlib.pyplot as plt
+        plt.matshow(matrix)
+        plt.colorbar()
+        plt.text(-25, -125, "Overlaps".format(tot), fontsize=20)
+        plt.show()
 
 def setup_matrix():
     """
