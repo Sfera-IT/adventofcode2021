@@ -124,11 +124,10 @@ def update_matrix_with_vectors(matrix, vectors):
             matrix[x1:x2+1, y1] += 1
         else:
             # Diagonal vector (only 45 degrees allowed)
-            range_x = range(x1, x2)
-            range_y = range(y1, y2)
-            ranges = list(zip(range_x, range_y))
-            for x, y in ranges:
+            y = y1
+            for x in range(x1, x2+1):
                 matrix[x, y] += 1
+                y += 1
 
     return matrix
 
