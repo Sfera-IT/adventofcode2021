@@ -107,15 +107,10 @@ hvLines.forEach((v) => {
             pointsMap[pointKey]++;
         }
     });
-
 });
 
-let cnt : number = 0;
-for(let key in pointsMap) {
-    let value = pointsMap[key];
-    cnt += ((value >= 2) ? 1 : 0);
-}
-console.log(cnt);
+console.log(Object.values(pointsMap).filter(v => v >= 2).length);
+
 
 // exercise 2
 pointsMap = {};
@@ -131,12 +126,7 @@ linesArray.forEach((v) => {
     });
 });
 
-cnt = 0;
-for(let key in pointsMap) {
-    let value = pointsMap[key];
-    cnt += ((value >= 2) ? 1 : 0);
-}
-console.log(cnt);
+console.log(Object.values(pointsMap).filter(v => v >= 2).length);
 
 
 
