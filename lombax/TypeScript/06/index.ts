@@ -70,7 +70,13 @@ console.log('Suboptimal solution 2: ' + sum);
 
 function occurrences(fishes) {
     let occurrences = fishes.reduce(function (acc, curr) {
-        return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+        // return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc // rewrite in a more readable way
+        if (acc[curr]) {
+            acc[curr]++;
+        } else {
+            acc[curr] = 1;
+        }
+        return acc;
     }, {});
     return occurrences
 }
@@ -96,7 +102,7 @@ for (let i = 0; i < days; i++) {
 console.log("Optimal solution: "+count.reduce((a,b) => a+b));
 
 days = 256;
-let count = occurrences(fishes);
+count = occurrences(fishes);
 for (let i = 0; i < days; i++) {
     count = increment(count);
 }
