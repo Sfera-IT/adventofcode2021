@@ -86,12 +86,15 @@ def main():
     data = [x.strip().split(" -> ") for x in data]
     data = [(x[0].split(","), x[1].split(",")) for x in data]
     
-    data = clenup_valid_vectors(data)
-
     matrix = update_matrix_with_vectors(matrix, data)
 
     tot = matrix[matrix > 1].shape[0]
     print("Total: {}".format(tot))
+
+    import matplotlib.pyplot as plt
+    plt.matshow(matrix)
+    plt.colorbar()
+    plt.show()
 
 def setup_matrix():
     """
@@ -100,20 +103,6 @@ def setup_matrix():
     matrix = np.zeros((1000, 1000), dtype=int)
     return matrix
 
-def clenup_valid_vectors(data):
-    """
-    Only keep "vertical" and "horizontal" vectors
-
-    A vertical vector is a line where x1 = x2, and a horizontal vector is a line where y1 = y2
-    """
-    valid_vectors = []
-    for vector in data:
-        # Compare the x and y values of the two points
-        if vector[0][0] == vector[1][0] or vector[0][1] == vector[1][1]:
-            valid_vectors.append(vector)
-
-    return valid_vectors
-
 def update_matrix_with_vectors(matrix, vectors):
     """
     Update the matrix with the given vectors
@@ -121,17 +110,26 @@ def update_matrix_with_vectors(matrix, vectors):
     for vector in vectors:
         # Get the x and y values of the two points
         x1, y1 = [int(x) for x in vector[0]]
-        x2, y2 = [int(x) for x in vector[1]]
+        x2, y2 = [int(y) for y in vector[1]]
+
+        x1, x2 = min(x1, x2), max(x1, x2)
+        y1, y2 = min(y1, y2), max(y1, y2)
 
         if x1 == x2:
             # Vertical vector
-            line = [min(y1, y2), max(y1, y2)+1]
-            matrix[x1, line[0]:line[1]] += 1
+            matrix[x1, y1:y2+1] += 1
         elif y1 == y2:
             # Horizontal vector
-            line = [min(x1, x2), max(x1, x2)+1]
-            matrix[line[0]:line[1], y1] += 1
+            matrix[x1:x2+1, y1] += 1
+        else:
+            # Diagonal vector (only 45 degrees allowed)
+            range_x = range(x1, x2)
+            range_y = range(y1, y2)
+            ranges = list(zip(range_x, range_y))
+            for x, y in ranges:
+                matrix[x, y] += 1
 
     return matrix
+
 if __name__ == "__main__":
     main()
