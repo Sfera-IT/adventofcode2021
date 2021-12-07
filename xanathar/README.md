@@ -12,7 +12,7 @@ Felt bored with just C#, so tried to do them also in Rust, but then it's too muc
 | Day  4 |  ✅|   ❌  |
 | Day  5 |  ✅|   ❌  |
 | Day  6 |  ✅|   ✅  |
-| Day  7 |  ⏳|   ⏳  |
+| Day  7 |  ❌|   ✅  |
 | Day  8 |  ⏳|   ⏳  |
 | Day  9 |  ⏳|   ⏳  |
 | Day 10 |  ⏳|   ⏳  |
