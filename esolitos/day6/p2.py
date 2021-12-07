@@ -16,7 +16,7 @@ def main():
 
     # Fish will spwan again on this date
     next_spawn_on = 7
-    for current_day in range(80):
+    for current_day in range(256):
       if current_day in days:
         todays_fish_count = days.pop(current_day)
         spawn_fish(days, next_spawn_on, todays_fish_count)
