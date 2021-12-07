@@ -108,23 +108,22 @@ def update_matrix_with_vectors(matrix, vectors):
     """
     Update the matrix with the given vectors
     """
-    for vector in vectors:
+    for (p0, p1) in vectors:
         # Get the x and y values of the two points
-        x1, y1 = [int(x) for x in vector[0]]
-        x2, y2 = [int(y) for y in vector[1]]
-
-        x1, x2 = min(x1, x2), max(x1, x2)
-        y1, y2 = min(y1, y2), max(y1, y2)
+        x1, y1 = [int(x) for x in p0]
+        x2, y2 = [int(y) for y in p1]
 
         if x1 == x2:
             # Vertical vector
+            y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
             matrix[x1, y1:y2+1] += 1
         elif y1 == y2:
             # Horizontal vector
+            x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
             matrix[x1:x2+1, y1] += 1
         else:
             # Diagonal vector (only 45 degrees allowed)
-            y = y1
+            x1, x2, y = (x1, x2, y1) if x1 < x2 else (x2, x1, y2)
             for x in range(x1, x2+1):
                 matrix[x, y] += 1
                 y += 1
