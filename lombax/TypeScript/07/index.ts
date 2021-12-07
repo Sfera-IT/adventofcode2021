@@ -6,13 +6,8 @@ const input : string = fs.readFileSync(currentPath+'/input.txt','utf8');
 let crabs : Array<number> = input.split(",").map(v => parseInt(v));
 
 
-// TODO optimize to pre-calculate all summations?
 function summation(to) {
-    let sum = 0;
-    for (let i = 0; i <= to; i++) {
-        sum += i;
-    }
-    return sum;
+    return (Math.pow(to, 2) + to) / 2;
 }
 
 
