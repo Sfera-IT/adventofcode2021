@@ -5,7 +5,7 @@ fn oh_crab(f: fn(i64, i64) -> i64) -> i64 {
     let min_crab = crabs.iter().min().unwrap();
     let max_crab = crabs.iter().max().unwrap();
 
-    (*min_crab..*max_crab).map(|p| crabs.iter().map(|c| f(*c, p)).sum::<i64>() ).min().unwrap()
+    (*min_crab..=*max_crab).map(|p| crabs.iter().map(|c| f(*c, p)).sum::<i64>() ).min().unwrap()
 }
 
 pub fn test1() {
