@@ -27,10 +27,9 @@ def main():
     for meeting_point in unique_depths:
       fuel = 0
       for x in data:
-        fuel += abs(x - meeting_point)
+        fuel += sum(range(abs(x - meeting_point)+1))
 
       fuel_consumption[meeting_point] = fuel
-      # print(f"Meet: {meeting_point}\nFuel:\t{fuel}")
 
     min_fuel = min(fuel_consumption.values())
     print(f"Min: {min_fuel}")
