@@ -13,15 +13,11 @@ describe('Helpers', () => {
         .toString()
         .split("\n");
 
-    beforeEach(() => {
-        
-    });
-
     it('basic parsing', async () => {
        
         const parsed = ParseData(testFileData);
-        expect(parsed[0].pre).toStrictEqual(['be', 'cfbegad','cbdgef','fgaecd','cgeb','fdcge','agebfd','fecdb','fabcd','edb']);
-        expect(parsed[0].post).toStrictEqual(['fdgacbe', 'cefdb', 'cefbgd', 'gcbe']);  
+        expect(parsed[0].digits).toStrictEqual(['be', 'cfbegad','cbdgef','fgaecd','cgeb','fdcge','agebfd','fecdb','fabcd','edb']);
+        expect(parsed[0].display).toStrictEqual(['fdgacbe', 'cefdb', 'cefbgd', 'gcbe']);  
     });
 
     it('with test data', async () => {
@@ -80,12 +76,11 @@ describe('Helpers', () => {
         let result = 0;
         const parsed = ParseData(realFileData);
         parsed.forEach(element => {
-            console.log("element", element);
             const decoded = AnalyzeData(element);
             const displayContent = DecodeData(element, decoded);
             result += displayContent;
         });
-        expect(result).toBe(5353);
+        expect(result).toBe(978171);
         console.log('second part of the puzzle', result);
     });
 });
