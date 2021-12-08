@@ -10,12 +10,10 @@ def main():
         data = [int(x) for x in f.readline().split(',')]
 
     unique_depths = set(data)
-    # depths = np.array(data)
-    # mode = stats.mode(depths)
-    # mean = np.mean(depths)
-    # median1 = stats.median_absolute_deviation(depths)
-    # median2 = stats.median_abs_deviation(depths)
-    # multimode = s.multimode(data)
+    print(s.multimode(data))
+    print(s.mean(data))
+    print(s.median(data))
+    print(s.harmonic_mean(data))
 
     # if "--show" in sys.argv:    
     #   import matplotlib.pyplot as plt
@@ -32,8 +30,10 @@ def main():
       fuel_consumption[meeting_point] = fuel
       # print(f"Meet: {meeting_point}\nFuel:\t{fuel}")
 
-    min_fuel = min(fuel_consumption.values())
-    print(f"Min: {min_fuel}")
+    key_list = list(fuel_consumption.keys())
+    val_list = list(fuel_consumption.values())
+    min_fuel = min(val_list)
+    print(f"Min: {min_fuel} at position {key_list[val_list.index(min_fuel)]}")
 
     if "--show" in sys.argv:    
       import matplotlib.pyplot as plt
