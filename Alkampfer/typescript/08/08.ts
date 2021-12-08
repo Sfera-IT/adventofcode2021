@@ -1,9 +1,8 @@
 import {compact, sumBy, map} from 'lodash';
-import * as fs from 'fs';
 
 export interface ILineOfData {
-    pre: string[];
-    post: string[];
+    digits: string[];
+    display: string[];
 }
 
 export function ParseData(data: string[]) : ILineOfData[]
@@ -12,8 +11,8 @@ export function ParseData(data: string[]) : ILineOfData[]
     data.forEach(element => {
         const parts = element.split('|');
         lines.push({   
-            pre: compact(parts[0].trim().split(' ')),
-            post: compact(parts[1].trim().split(' '))
+            digits: compact(parts[0].trim().split(' ')),
+            display: compact(parts[1].trim().split(' '))
         });
     });
     return lines;
@@ -36,7 +35,7 @@ export function AnalyzeData(data: ILineOfData) : {[key: string]: number}
     // the digit to each combination
     let display = {} as {[key: string]: number};
     const digits =  new Array<string>(10);
-    const sorted = map(data.pre, sortStringChars);
+    const sorted = map(data.digits, sortStringChars);
 
     // ok now for the first round, combination we know each time we found something
     // we remove that element from the search collection.
@@ -63,53 +62,48 @@ export function AnalyzeData(data: ILineOfData) : {[key: string]: number}
         }
     });
 
+    // remove all identified digits from the search collection
     sorted.splice(sorted.indexOf(digits[1]), 1);
     sorted.splice(sorted.indexOf(digits[7]), 1);
     sorted.splice(sorted.indexOf(digits[4]), 1);
     sorted.splice(sorted.indexOf(digits[8]), 1);
 
-    // some segments are known, A is the segment removing 1 from 7
-    const segmentA = DifferentCharInString(digits[7], digits[1])[0];
-
-    // for all element that have 6 segments, 6 is the only one that does not have the two segment of 1
-    // this allows me to find element and then segment c
-    digits[6] = sorted.filter(e => e.length == 6 && DifferentCharInString(digits[1], e).length == 1)[0];
-    display[digits[6]] = 6;
-    sorted.splice(sorted.indexOf(digits[6]), 1);
+    // for all elements that have 6 segments, 6 is the only one that does not have the two segment of 1
+    // this allows me to find element 6 and then segment c
+    ElementFound(6, sorted.filter(e => e.length == 6 && DifferentCharInString(digits[1], e).length == 1)[0]);
 
     const segmentC = DifferentCharInString(digits[1], digits[6])[0];
     const segmentF = DifferentCharInString(digits[1], segmentC)[0];
 
     // digit 2 is the only one that does not have segment F
-    digits[2] = sorted.filter(e => DifferentCharInString(segmentF, e).length == 1)[0];
-    display[digits[2]] = 2;
-    sorted.splice(sorted.indexOf(digits[2]), 1);
+    ElementFound(2, sorted.filter(e => DifferentCharInString(segmentF, e).length == 1)[0]);
 
     // digit 5 is does not have segment C with 6 but we know 6
-    digits[5] = sorted.filter(e => e !== digits[6] && DifferentCharInString(segmentC, e).length == 1)[0];
-    display[digits[5]] = 5;
-    sorted.splice(sorted.indexOf(digits[5]), 1);
+    ElementFound(5, sorted.filter(e => e !== digits[6] && DifferentCharInString(segmentC, e).length == 1)[0]);
 
-    digits[3] = sorted.filter(e => e.length == 5)[0];
-    display[digits[3]] = 3;
-    sorted.splice(sorted.indexOf(digits[3]), 1);
-     
+    // digit 3 is simple, is the only remaining with 5 segments
+    ElementFound(3, sorted.filter(e => e.length == 5)[0]);
+
     const segmentE = DifferentCharInString(digits[6], digits[5])[0];
 
-    digits[9] = sorted.filter(e => DifferentCharInString(segmentE, e).length == 1)[0];
-    display[digits[9]] = 9;
-    sorted.splice(sorted.indexOf(digits[9]), 1);
+    // we have only two element remaining, 9 and 0, 9 is the only one that does not have segment E
+    ElementFound(9, sorted.filter(e => DifferentCharInString(segmentE, e).length == 1)[0]);
 
-    digits[0] = sorted[0];
-    display[digits[0]] = 0;
-    sorted.splice(sorted.indexOf(digits[0]), 1);
+    // last element is zero.
+    ElementFound(0, sorted[0]);
 
     return display;
+
+    function ElementFound(element: number, segments: string) {
+        digits[element] = segments;
+        display[digits[element]] = element;
+        sorted.splice(sorted.indexOf(digits[element]), 1);
+    }
 }
 
 export function DecodeData(data: ILineOfData, display: {[key: string]: number}) : number
 {
-    var sortedPost = map(data.post, sortStringChars);
+    var sortedPost = map(data.display, sortStringChars);
 
     return display[sortedPost[0]] * 1000 + 
         display[sortedPost[1]] * 100 +
@@ -126,7 +120,7 @@ export function CountUnique(data: ILineOfData[]) : number
 {
     let count = 0;
     data.forEach(element => {
-        count += sumBy(element.post, (item) => Number(
+        count += sumBy(element.display, (item) => Number(
             item.length == 2 || 
             item.length == 3 || 
             item.length == 7 || 
