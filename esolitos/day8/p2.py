@@ -63,6 +63,63 @@ import sys
 #
 #In the output values, how many times do digits 1, 4, 7, or 8 appear?
 #
+# --- Part Two ---
+#
+# Through a little deduction, you should now be able to determine the remaining digits. Consider again the first example above:
+#
+# acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab |
+# cdfeb fcadb cdfeb cdbaf
+#
+# After some careful analysis, the mapping between signal wires and segments only make sense in the following configuration:
+#
+#  dddd
+# e    a
+# e    a
+#  ffff
+# g    b
+# g    b
+#  cccc
+#
+# So, the unique signal patterns would correspond to the following digits:
+#
+#     acedgfb: 8
+#     cdfbe: 5
+#     gcdfa: 2
+#     fbcad: 3
+#     dab: 7
+#     cefabd: 9
+#     cdfgeb: 6
+#     eafb: 4
+#     cagedb: 0
+#     ab: 1
+#
+# Then, the four digits of the output value can be decoded:
+#
+#     cdfeb: 5
+#     fcadb: 3
+#     cdfeb: 5
+#     cdbaf: 3
+#
+# Therefore, the output value for this entry is 5353.
+#
+# Following this same process for each entry in the second, larger example above, the output value of each entry can be determined:
+#
+#     fdgacbe cefdb cefbgd gcbe: 8394
+#     fcgedb cgb dgebacf gc: 9781
+#     cg cg fdcagb cbg: 1197
+#     efabcd cedba gadfec cb: 9361
+#     gecf egdcabf bgf bfgea: 4873
+#     gebdcfa ecba ca fadegcb: 8418
+#     cefg dcbef fcge gbcadfe: 4548
+#     ed bcgafe cdgba cbgef: 1625
+#     gbdfcae bgc cg cgb: 8717
+#     fgae cfgab fg bagce: 4315
+#
+# Adding all of the output values in this larger example produces 61229.
+#
+# For each entry, determine all of the wire/segment connections and decode the four-digit output values. What do you get if you add up all of the output values?
+#
+# Your puzzle answer was 1063760.
 def main():
   fname = path.basename(path.dirname(__file__))
   fname = f"{fname}.txt" if '--real' in sys.argv else f"{fname}-test.txt"
@@ -70,36 +127,73 @@ def main():
   with open(dataFile, "r") as f:
     data = [[x.split() for x in sublist.split('|')] for sublist in f.readlines()]
 
-  # Count the occurences
-  occurrences = 0
+  numbers = []
   for l in data:
     specs = l[0]
     digits = l[1]
 
-    selected = [x for x in digits if is_simple_digit(x)]
-    occurrences += len(selected)
+    specs = discover_chars(specs)
+    decoded = [decode_digit(n, specs) for n in digits]
+    numbers.append(int(''.join(decoded)))
 
-  print(f"Numbers 1, 4, 7, and 8 appear {occurrences} times.")
-
-
-def is_simple_digit(chars: str) -> bool:
-  return decode_digit(chars) in (1, 4, 7, 8)
+  print(f"Sum is: {sum(numbers)}")
 
 
-def decode_digit(chars: str) -> str or False:
-  if len(chars) == 2:
+def discover_chars(wirings: list) -> map:
+  chars = {}
+  segments = {}
+
+  # Discover 1, 4 ,7, 8
+  for x in wirings:
+    num = decode_simple_digit(x)
+    if num != False:
+      chars[num] = set(x)
+
+  # Find: 5, 2, 3
+  five_digit_wirings = [set(x) for x in wirings if len(x) == 5]
+  # Find: 6, 9, 0
+  six_digit_wirings = [set(x) for x in wirings if len(x) == 6]
+
+  chars[3] = [x for x in five_digit_wirings if chars[1].issubset(x)].pop()
+  chars[9] = [x for x in six_digit_wirings if chars[4].issubset(x)].pop()
+
+  segments['top'] = chars[7] - chars[1]
+  segments['right-all'] = chars[1]
+
+  segments['bottom'] = chars[9] - chars[4] - segments['top']
+  segments['mid'] =  chars[3] - chars[1] - segments['top'] - segments['bottom']
+
+  chars[0] = chars[8] - segments['mid']
+  chars[6] = [x for x in six_digit_wirings if (x.issubset(chars[8]) and (x != chars[9] and x != chars[0]))].pop()
+
+  segments['left-bottom'] = chars[8] - chars[9]
+  segments['right-top'] = segments['right-all'] - chars[6]
+  segments['right-bottom'] = segments['right-all'] - chars[6]
+
+  chars[5] = chars[6] - segments['left-bottom']
+  chars[2] = [set(x) for x in wirings if set(x) not in chars.values()].pop()
+
+  return chars
+
+def decode_simple_digit(letters: str) -> str or False:
+  if len(letters) == 2:
     return 1
-  elif len(chars) == 5:
-    return 2
-  elif len(chars) == 4:
+  elif len(letters) == 4:
     return 4
-  elif len(chars) == 3:
+  elif len(letters) == 3:
     return 7
-  elif len(chars) == 7:
+  elif len(letters) == 7:
     return 8
-  
+
   return False
 
+def decode_digit(letters: str, wirings: map) -> str:
+  letters = set(letters)
+
+  key_list = list(wirings.keys())
+  val_list = list(wirings.values())
+
+  return str(key_list[val_list.index(letters)])
 
 if __name__ == "__main__":
   main()
