@@ -1,10 +1,6 @@
 from os import path
 import numpy as np
-from numpy.ma.core import minimum_fill_value
-from scipy import stats
-import statistics as s
 import sys
-import json
 
 # --- Day 9: Smoke Basin ---
 # 
@@ -30,6 +26,50 @@ import json
 # 
 # Find all of the low points on your heightmap. What is the sum of the risk levels of all low points on your heightmap?
 # 
+#   --- Part Two ---
+# 
+# Next, you need to find the largest basins so you know what areas are most important to avoid.
+# 
+# A basin is all locations that eventually flow downward to a single low point. Therefore, every low point has a basin, although some basins are very small. Locations of height 9 do not count as being in any basin, and all other locations will always be part of exactly one basin.
+# 
+# The size of a basin is the number of locations within the basin, including the low point. The example above has four basins.
+# 
+# The top-left basin, size 3:
+# 
+# 2199943210
+# 3987894921
+# 9856789892
+# 8767896789
+# 9899965678
+# 
+# The top-right basin, size 9:
+# 
+# 2199943210
+# 3987894921
+# 9856789892
+# 8767896789
+# 9899965678
+# 
+# The middle basin, size 14:
+# 
+# 2199943210
+# 3987894921
+# 9856789892
+# 8767896789
+# 9899965678
+# 
+# The bottom-right basin, size 9:
+# 
+# 2199943210
+# 39878949z1
+# 9856789892
+# 8767896789
+# 9899965678
+# 
+# Find the three largest basins and multiply their sizes together. In the above example, this is 9 * 14 * 9 = 1134.
+# 
+# What do you get if you multiply together the sizes of the three largest basins?
+# 
 def main():
   fname = path.basename(path.dirname(__file__))
   # fname = f"{fname}.txt" if '--real' in sys.argv else f"{fname}-test.txt"
@@ -39,6 +79,13 @@ def main():
     data = [[int(y) for y in list(x.strip())] for x in f.readlines()]
   
   matrix = np.matrix(data)
+  nines = np.count_nonzero(matrix == 9)
+
+  if "--show" in sys.argv:
+    import matplotlib.pyplot as plt
+    plt.matshow(matrix)
+    plt.colorbar()
+    plt.show()  
 
   max_x = matrix.shape[0]
   max_y = matrix.shape[1]
@@ -55,10 +102,37 @@ def main():
       if (y < max_y-1 and matrix[x,y+1] <= num):
         continue
 
-      minimums.append(num)
+      minimums.append((x,y))
   
-  total = sum(minimums) + len(minimums)
-  print(f"Sum: {total}")
+  basins = []
+  for x, y in minimums:
+    basins.append(walk_basin(matrix, x, y))
+  
+  basins.sort(reverse=True)
+  print(f"Sound {nines} 9s and {sum(basins)} basins.\nNines + Basins (should be 10k): {sum(basins)+nines}")
+
+  tot = basins[0] * basins[1] * basins[2]
+  print(f"Tot: {tot}")
+  
+
+def walk_basin(m, x, y):
+  size = 1
+  m[x,y] = 9
+
+  # X Axiz
+  if x > 0 and m[x-1,y] != 9:
+    size += walk_basin(m, x-1, y)
+  if x < (m.shape[0]-1) and m[x+1,y] != 9:
+    size += walk_basin(m, x+1, y)
+
+  # Y Axiz
+  if y > 0 and m[x,y-1] != 9:
+    size += walk_basin(m, x, y-1)
+  if y < (m.shape[1]-1) and m[x,y+1] != 9:
+    size += walk_basin(m, x, y+1)
+
+  return size
+
 
 if __name__ == "__main__":
   main()
