@@ -10,8 +10,8 @@ curl https://adventofcode.com/${year}/day/${day}/input --cookie session="${AOC_S
 
 pyFileName=${day}.py
 touch  ${day}/${pyFileName}
-open -a Visual\ Studio\ Code\ -\ Insiders 3 .
-open -a Visual\ Studio\ Code\ -\ Insiders 3 ${day}/${pyFileName}
-open -a Visual\ Studio\ Code\ -\ Insiders 3 ${day}/${inputFileName}
+# open -a Visual\ Studio\ Code\ -\ Insiders 3 .
+# open -a Visual\ Studio\ Code\ -\ Insiders 3 ${day}/${pyFileName}
+# open -a Visual\ Studio\ Code\ -\ Insiders 3 ${day}/${inputFileName}
 
 open https://adventofcode.com/${year}/day/${day}
