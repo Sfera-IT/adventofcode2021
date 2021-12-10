@@ -68,18 +68,17 @@ def main():
   with open(dataFile, "r") as f:
     data = [x.strip() for x in f.readlines()]
   
-  tot = 0
-  corrupted = []
+  totals = []
+  incomplete = []
   for line in data:
     line_list = list(line)
-    state, illegal_char = validate_line(line_list)
-    if state == LineStatus.corrupted:
-      score = calc_score(illegal_char)
-      tot += score
-      corrupted.append((line, illegal_char, score))
+    state, chars = validate_line(line_list)
+    if state == LineStatus.incomplete:
+      chars.reverse()
+      totals.append(calc_closing_score(chars))
   
-  print(corrupted)
-  print(tot)
+  totals.sort()
+  print(totals[int(len(totals)/2)])
 
 class LineStatus(Enum):
   valid = 0
@@ -95,7 +94,7 @@ def validate_line(row: list, open_seq: list = None):
     open_seq = []
   
   if len(row) == 0:
-    return (LineStatus.valid, None) if len(open_seq) == 0 else (LineStatus.incomplete, None)
+    return (LineStatus.valid, None) if len(open_seq) == 0 else (LineStatus.incomplete, open_seq)
   
   next_char = row.pop()
   if next_char in ['(', '[', '{', '<']:
@@ -129,6 +128,27 @@ def calc_score(c: str) -> int:
     return 25137
 
   raise RuntimeError(f'Invalid char: {c}')
+
+def get_clsing_char_val(c) -> int:
+  if c == '(':
+    return 1
+  elif c == '[':
+    return 2
+  elif c == '{':
+    return 3
+  elif c == '<':
+    return 4
+
+  raise RuntimeError(f'Invalid char: {c}')
+
+
+def calc_closing_score(chars: list) -> int:
+  total = 0
+  for c in chars:
+    total = (total * 5) + get_clsing_char_val(c)
+
+  return total
+
 
 if __name__ == "__main__":
   main()
