@@ -15,7 +15,7 @@ Felt bored with just C#, so tried to do them also in Rust, but then it's too muc
 | Day  7 |  ❌|   ✅  |
 | Day  8 |  ❌|   ✅  |
 | Day  9 |  ❌|   ✅  |
-| Day 10 |  ⏳|   ⏳  |
+| Day 10 |  ❌|   ✅  |
 | Day 11 |  ⏳|   ⏳  |
 | Day 12 |  ⏳|   ⏳  |
 | Day 13 |  ⏳|   ⏳  |
