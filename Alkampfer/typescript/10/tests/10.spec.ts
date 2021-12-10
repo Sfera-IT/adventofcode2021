@@ -28,7 +28,7 @@ describe('Helpers', () => {
             }
         });
         const score = GetScore(result);
-        expect(score).toBe(358737);
+        expect(score).toBe(0);
 
         // expect(result.length).toBe(5); // 7 lines expected
         // expect(result).toStrictEqual(['}',')',']',')','>']); // 7 lines expected
@@ -45,6 +45,6 @@ describe('Helpers', () => {
         });
         
         scores.sort((a,b) => a - b);
-        expect(scores[(scores.length - 1) / 2]).toBe(4329504793); // 7 lines expected
+        expect(scores[(scores.length - 1) / 2]).toBe(0); // 7 lines expected
     });
 });
