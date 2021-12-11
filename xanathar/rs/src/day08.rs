@@ -48,42 +48,42 @@ struct Signal {
 impl Signal {
     pub fn translate_afters(&self) -> u32 {
         // Discover the trivial ones
-        let p1 = self.before.iter().filter(|p| p.bits == 2).next().unwrap();
-        let p7 = self.before.iter().filter(|p| p.bits == 3).next().unwrap();
-        let p4 = self.before.iter().filter(|p| p.bits == 4).next().unwrap();
-        let p8 = self.before.iter().filter(|p| p.bits == 7).next().unwrap();
+        let p1 = self.before.iter().find(|p| p.bits == 2).unwrap();
+        let p7 = self.before.iter().find(|p| p.bits == 3).unwrap();
+        let p4 = self.before.iter().find(|p| p.bits == 4).unwrap();
+        let p8 = self.before.iter().find(|p| p.bits == 7).unwrap();
 
         // 3 is the only 5-segment pattern which overlaps with 7
-        let p3 = self.before.iter().filter(
+        let p3 = self.before.iter().find(
             |p| p.bits == 5 && (p.segs & p7.segs) == p7.segs
-        ).next().unwrap();
+        ).unwrap();
 
         // the d-segment is the only one which is in p3 and p4 but not in p7
         let segd = (p3.segs ^ p7.segs) & p4.segs;
 
         // 0 is the only 6-segment pattern without segd
-        let p0 = self.before.iter().filter(
+        let p0 = self.before.iter().find(
             |p| p.bits == 6 && (p.segs & segd) == 0
-        ).next().unwrap();
+        ).unwrap();
 
         // segb is 4, minus pattern 1, and without segd
         let segb = (p4.segs ^ p1.segs) ^ segd;
 
         // 2 is the only remaining 5-segment pattern without segb; 5 is the other
-        let p2 = self.before.iter().filter(
+        let p2 = self.before.iter().find(
             |p| p.bits == 5 && (p.segs & segb) == 0 && (p.segs != p3.segs)
-        ).next().unwrap();
-        let p5 = self.before.iter().filter(
+        ).unwrap();
+        let p5 = self.before.iter().find(
             |p| p.bits == 5 && (p.segs != p2.segs) && (p.segs != p3.segs)
-        ).next().unwrap();
+        ).unwrap();
 
         // 9 is the only remaining 6-segment pattern which overlaps with 1; 6 is the other
-        let p9 = self.before.iter().filter(
+        let p9 = self.before.iter().find(
             |p| p.bits == 6 && (p.segs & p1.segs) == p1.segs && (p.segs != p0.segs)
-        ).next().unwrap();
-        let p6 = self.before.iter().filter(
+        ).unwrap();
+        let p6 = self.before.iter().find(
             |p| p.bits == 6 && (p.segs != p0.segs) && (p.segs != p9.segs)
-        ).next().unwrap();
+        ).unwrap();
 
         let mut result = 0u32;
 
@@ -109,8 +109,6 @@ impl Signal {
 }
 
 
-
-
 fn load_raw() -> Vec<Signal> {
     utils::parse_lines("../data/day8.txt", |s| {
         let blocks = s.split('|').collect::<Vec<&str>>();
@@ -118,14 +116,14 @@ fn load_raw() -> Vec<Signal> {
         let before: Vec<Pattern> = blocks[0]
             .split(' ')
             .map(|s| s.trim())
-            .filter(|s| s.len() > 0)
+            .filter(|s| !s.is_empty())
             .map(|s| Pattern::from_str(s))
             .collect();
 
         let after: Vec<Pattern> =  blocks[1]
             .split(' ')
             .map(|s| s.trim())
-            .filter(|s| s.len() > 0)
+            .filter(|s| !s.is_empty())
             .map(|s| Pattern::from_str(s))
             .collect();
 

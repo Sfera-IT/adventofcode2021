@@ -100,6 +100,26 @@ impl<T> Map2D<T> {
         res
     }
 
+    pub fn neighbours8_coords(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
+        let mut res = Vec::new();
+        let x = x as isize;
+        let y = y as isize;
+
+        for dx in -1..=1 {
+            for dy in -1..=1 {
+                if dx != 0 || dy != 0 {
+                    let x = x + dx;
+                    let y = y + dy;
+                    if x >= 0 && y >= 0 && x < (self.width as isize) && y < (self.height as isize) {
+                        res.push((x as usize, y as usize));
+                    }
+                }
+            }
+        }
+
+        res
+    }
+
     pub fn flood_fill4(&mut self, x: usize, y: usize, filler: &dyn Fn(&T) -> Option<T>) -> usize {
         match filler(self.get(x, y)) {
             None => return 0,
