@@ -44,8 +44,8 @@ def main():
   rows = len(m)
   cols = len(m[0])
 
-  flash_count = 0
-  for i in range(100):
+  for i in range(1000):
+    flash_count = 0
     print(f"\nIteration {i+1}")
     for x in range(rows):
       for y in range(cols):
@@ -66,6 +66,11 @@ def main():
     # print(debug)
     
     print(f"Flashed {flash_count} after iteration {i+1} ")
+
+    if flash_count >= rows * cols:
+      print("FINISHED!")
+      break;
+
 
   print('Done.')
 
