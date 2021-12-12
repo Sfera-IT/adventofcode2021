@@ -116,7 +116,7 @@ def main():
   print(f"Path count: {len(paths)}")
 
 
-def find_all_paths(graph: dict, start: str, end: str, path: list=[], walked_lower = False):
+def find_all_paths(graph: dict, start: str, end: str, path: list=[], can_use_lower = True):
   path = path + [start]
   if start == end:
     return [path]
@@ -125,12 +125,10 @@ def find_all_paths(graph: dict, start: str, end: str, path: list=[], walked_lowe
 
   paths = []
   for n in graph[start]:
-    if not is_walked(n, path) or is_upper(n) or (not walked_lower and is_lower_walk_allowed(n, path)):
-      if not is_upper(n) and is_lower_walk_allowed(n, path):
-        walked_lower = True
-
-      newpaths = find_all_paths(graph, n, end, path)
-      paths.extend(newpaths)
+    if not is_walked(n, path) or is_upper(n):
+      paths.extend(find_all_paths(graph, n, end, path, can_use_lower))
+    elif not is_keypoint(n) and can_use_lower:
+      paths.extend(find_all_paths(graph, n, end, path, False))
 
   return paths
 
@@ -141,10 +139,6 @@ def is_walked(n: str, p: list) -> bool:
 
 def is_upper(n: str) -> bool:
   return n.upper() == n
-
-
-def is_lower_walk_allowed(n: str, path: list) -> bool:
-  return not is_keypoint(n) and path.count(n) <= 1
 
 
 def is_keypoint(n: str) -> bool:
