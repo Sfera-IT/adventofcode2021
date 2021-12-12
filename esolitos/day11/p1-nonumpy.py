@@ -1,7 +1,5 @@
 from os import path
-import numpy as np
 import sys
-from enum import Enum
 
 # --- Day 11: Dumbo Octopus ---
 # 
@@ -38,65 +36,53 @@ def main():
   # fname = f"{fname}.txt"
   dataFile = path.join(path.dirname(__file__), "../_data/", fname)
   with open(dataFile, "r") as f:
-    data = [[int(n) for n in list(x.strip())] for x in f.readlines()]
+    # data = [[int(n) for n in list(x.strip())] for x in f.readlines()]
+    m = [[{'c':int(n), 'f': False} for n in list(x.strip())] for x in f.readlines()]
   
-  rows = len(data)
-  cols = len(data[0])
-
-  # data_type = {'names':('pow', 'flash'),'formats':('i', '?')}
-  # m = np.zeros(rows*cols, dtype=data_type).reshape(rows,cols)
-  # m['pow'] = data
-  m = np.matrix(data)
+  # rows = len(data)
+  # cols = len(data[0])
+  rows = len(m)
+  cols = len(m[0])
 
   flash_count = 0
   for i in range(100):
     print(f"\nIteration {i+1}")
-    # Increase all by 1
-    # m['pow'] += 1
-    m += 1
+    for x in range(rows):
+      for y in range(cols):
+        # Reset flashed
+        if m[x][y]['f']:
+          m[x][y]['c'] = 0
+          m[x][y]['f'] = False
 
-    # Get all flashed items
-    # flashed = np.argwhere(m['flash']==True)
-    # flashed = np.argwhere(m > 9)
-    while True:
-      flashed = np.argwhere(m == 10)
-      if not flashed.size:
-        break
-      for x,y in flashed:
-        inc_neigbors(m,x,y)
-
-    # m['flash'] = m['pow'] > 9
-    # flash_count += m[m['pow'] > 9]['pow'].size
-    flash_count += m[m > 9].size
-
-    # m[m['pow'] > 9]['pow'] = 0
-    m[m > 9] = 0
-
-    # flashed = np.argwhere(m['pow'] > 9)
-    # flash_count += flashed.size
-    # for x,y in flashed:
-    #   m[x,y]['pow'] = 0
+        # Increase and reset
+        m[x][y]['c'] += 1
     
-    # m['flash'] = False
+    for x in range(rows):
+      for y in range(cols):
+        if m[x][y]['c'] > 9:
+          flash_count += flash(m,x,y)
+
+    # debug = [[m2['c'] if m2['c'] <= 9 else 0 for m2 in m1] for m1 in m]
+    # print(debug)
+    
     print(f"Flashed {flash_count} after iteration {i+1} ")
 
   print('Done.')
 
 
-def inc_neigbors(m,x,y):
+def flash(m,x,y):
+  if m[x][y]['c'] <= 9 or m[x][y]['f']:
+    return 0
+
+  flashed = 1
+  m[x][y]['f'] = True
   x1, y1 = (max(x-1, 0), max(y-1, 0))
-  x2 = min(x+2, m.shape[0]) if x > 0 else 2
-  y2 = min(y+2, m.shape[1]) if y > 0 else 2
-  # m[x1:x2, y1:y2]['pow'] += 1
-
-  # print(f"Item {x}:{y}: {m[x,y]}")
-  # print(m[x1:x2, y1:y2])
-  m[x1:x2, y1:y2] += 1
-  # m[x1:x1+3, y1:y1+3] += 1
-  # print(m[x1:x2, y1:y2])
-
-  pass
+  for xr in range(x1, min(x+2, len(m))):
+    for yr in range(y1, min(y+2, len(m[x]))):
+      m[xr][yr]['c'] += 1
+      flashed += flash(m, xr, yr)
   
+  return flashed
 
 
 if __name__ == "__main__":
