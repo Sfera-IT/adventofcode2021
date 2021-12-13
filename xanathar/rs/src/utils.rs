@@ -38,6 +38,14 @@ pub struct Map2D<T> {
 }
 
 impl<T> Map2D<T> {
+    pub fn filled(width: usize, height: usize, item: &T) -> Self where T: Copy {
+        Map2D {
+            width,
+            height,
+            map: vec![vec![*item; width].into_boxed_slice(); height],
+        }
+    }
+
     pub fn load(filename: &str, parser: impl Fn(String) -> Box<[T]>) -> Self {
         let map = parse_lines(filename, |s| Some(parser(s)));
         let width = map[0].len();
@@ -100,6 +108,42 @@ impl<T> Map2D<T> {
         res
     }
 
+    pub fn fold_y(&self, row: usize, combiner: impl Fn(&T, &T) -> T) -> Map2D<T> where T: Clone {
+        let mut result = Map2D {
+            width: self.width,
+            height: row,
+            map: self.map.iter().take(row).cloned().collect(),
+        };
+
+        for y in row + 1 .. self.height {
+            let dy = 2 * row - y;
+
+            for x in 0 .. self.width {
+                result.set(x, dy, combiner(self.get(x, y), result.get(x, dy)));
+            }
+        }
+
+        result
+    }
+
+    pub fn fold_x(&self, col: usize, combiner: impl Fn(&T, &T) -> T) -> Map2D<T> where T: Clone {
+        let mut result = Map2D {
+            width: col,
+            height: self.height,
+            map: self.map.iter().map(|b| b.iter().take(col).cloned().collect()).collect(),
+        };
+
+        for x in col + 1 .. self.width {
+            let dx = 2 * col - x;
+
+            for y in 0 .. self.height {
+                result.set(dx, y, combiner(self.get(x, y), result.get(dx, y)));
+            }
+        }
+
+        result
+    }
+
     pub fn neighbours8_coords(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
         let mut res = Vec::new();
         let x = x as isize;
@@ -156,5 +200,9 @@ impl<T> Map2D<T> {
             }
             println!();
         }
+    }
+
+    pub fn count(&self, filter: impl Fn(&T) -> bool) -> usize {
+        self.map.iter().flat_map(|row| row.iter()).filter(|t| filter(*t)).count()
     }
 }

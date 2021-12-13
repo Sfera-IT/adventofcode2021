@@ -62,7 +62,7 @@ impl Hash for Cave {
     }
 }
 
-fn count_paths(cave: &Cave, mut visited_small: &mut HashSet<String>, tolerated: bool) -> u64 {
+fn count_paths(cave: &Cave, visited_small: &mut HashSet<String>, tolerated: bool) -> u64 {
     if cave.kind() == CaveKind::End {
         return 1;
     }
@@ -83,7 +83,7 @@ fn count_paths(cave: &Cave, mut visited_small: &mut HashSet<String>, tolerated: 
 
     let count = cave.conns().iter()
         .filter(|c| c.kind() != CaveKind::Start)
-        .map(|c| count_paths(c, &mut visited_small, tolerated || tolerating_this)).sum();
+        .map(|c| count_paths(c, visited_small, tolerated || tolerating_this)).sum();
 
     if cave.kind() == CaveKind::Small && !tolerating_this {
         visited_small.remove(&cave.name());

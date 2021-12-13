@@ -117,14 +117,14 @@ fn load_raw() -> Vec<Signal> {
             .split(' ')
             .map(|s| s.trim())
             .filter(|s| !s.is_empty())
-            .map(|s| Pattern::from_str(s))
+            .map(Pattern::from_str)
             .collect();
 
         let after: Vec<Pattern> =  blocks[1]
             .split(' ')
             .map(|s| s.trim())
             .filter(|s| !s.is_empty())
-            .map(|s| Pattern::from_str(s))
+            .map(Pattern::from_str)
             .collect();
 
         let v = Signal {
