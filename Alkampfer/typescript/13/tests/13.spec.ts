@@ -1,5 +1,5 @@
 import 'jest';
-import {Point, LoadFile, Game} from '../13';
+import {LoadFile} from '../13';
 
 describe('Helpers', () => {
     
@@ -29,7 +29,6 @@ describe('Helpers', () => {
 
         const game = LoadFile("input.txt");
         game.performFolds();
-        const result = game.Plot();
-        console.log(result); //now look at the console
+        game.Plot();
     });
 });
