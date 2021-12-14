@@ -5,7 +5,8 @@ use std::rc::Rc;
 
 const MAX_ITERATIONS: usize = 100;
 
-
+// Define an atom type wrapping an atom in the polymer.
+// Unnecessary, but gets handly for debug mostly.
 #[derive(Copy, Clone, PartialEq, Default)]
 struct Atom(u8);
 
@@ -46,6 +47,7 @@ impl fmt::Debug for Atom {
 }
 
 
+// These are the translation rules, indexed with Atom::pair_index for O(1) guaranteed access
 struct PolymerRules {
     table: [Option<Atom>; Atom::MAX_PAIRS],
 }
@@ -70,6 +72,11 @@ impl PolymerRules {
 }
 
 
+// Accumulator for the result count of a resolution.
+// Used in the dynamic programming solution.
+// Wrapped in a Rc because we don't want to copy and we are passing
+// this around everywhere.
+// It's immutable, so no need for a RefCell.
 #[derive(Clone)]
 struct PolymerResult(Rc<[u128; Atom::MAX]>);
 
@@ -112,7 +119,8 @@ impl fmt::Debug for PolymerResult {
     }
 }
 
-
+// A cache of all the expansions of a given bimer for possible iterations
+// Used in the dynamic programming solution
 struct BimerCache(Box<[Option<PolymerResult>]>);
 
 impl BimerCache {
@@ -143,7 +151,7 @@ impl BimerCache {
     }
 }
 
-
+// Easy - the bruteforce solution.
 fn polymerize_bruteforce(v: &[Atom], rules: &PolymerRules) -> Vec<Atom> {
     let mut res = vec![v[0]];
 
@@ -157,6 +165,7 @@ fn polymerize_bruteforce(v: &[Atom], rules: &PolymerRules) -> Vec<Atom> {
     res
 }
 
+// The termination of the brute force solution
 fn count_min_max(polymer: &[Atom]) -> (usize, usize) {
     let mut counts = [0usize; Atom::MAX];
 
@@ -170,7 +179,7 @@ fn count_min_max(polymer: &[Atom]) -> (usize, usize) {
     )
 }
 
-
+// Loads data from the disk, boring stuff
 fn load_data() -> (Vec<Atom>, PolymerRules) {
     let lines = utils::read_lines("../data/day14.txt").collect::<Vec<String>>();
 
@@ -185,20 +194,26 @@ fn load_data() -> (Vec<Atom>, PolymerRules) {
     (template, rules)
 }
 
+// Does the dynamic programming solution, resolving the bimer of atoms (a1, a2) for the specified number of iteration
 fn calc_bimer(a1: Atom, a2: Atom, iteration: usize, cache: &mut BimerCache, rules: &PolymerRules) -> PolymerResult {
+    // If we are at iteration zero, just spit out the zero entry from the cache, creating it if missing
     if iteration == 0 {
         return cache.zero_entry(a1, a2);
     }
 
+    // If we have the entry in cache, we're done
     if let Some(r) = cache.get(a1, a2, iteration) {
         return r;
     }
 
+    // It's not in cache. Resolve this iteration recursively
     let amid = rules.get(a1, a2).unwrap();
 
     let bimer1 = calc_bimer(a1, amid, iteration - 1, cache, rules);
     let bimer2 = calc_bimer(amid, a2, iteration - 1, cache, rules);
 
+    // Reduce the result: it's the combination of the left and right branches, minus the mid element
+    // We return it and store it in cache
     cache.set(a1, a2, iteration, PolymerResult::combine(amid, &bimer1, &bimer2))
 }
 
@@ -216,13 +231,16 @@ pub fn test1() {
 
 
 pub fn test2() {
+    const ITERATIONS: usize = 40;
     let (polymer, rules) = load_data();
 
     let mut cache = BimerCache::new();
     let mut bimer_result: Option<PolymerResult> = None;
 
+    // Apply the dynamic solution to all consecutive bimers in the polymerm, and combine
+    // the result (skipping the last element of the previous bimer to avoid counting duplicates)
     for i in 1..polymer.len() {
-        let res = calc_bimer(polymer[i - 1], polymer[i], 40, &mut cache, &rules);
+        let res = calc_bimer(polymer[i - 1], polymer[i], ITERATIONS, &mut cache, &rules);
         bimer_result = match bimer_result {
             None => Some(res),
             Some(br) => {
