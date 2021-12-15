@@ -19,9 +19,9 @@ impl MapTile {
     }
 }
 
-type MapTileRef = Reverse<(u64, usize, usize)>;
 
 fn djikstra_solve(map: &mut Map2D<MapTile>) {
+    type MapTileRef = Reverse<(u64, usize, usize)>;
     let mut adiacent = BinaryHeap::<MapTileRef>::new();
     adiacent.push(Reverse((0, 0, 0)));
 
@@ -43,6 +43,40 @@ fn djikstra_solve(map: &mut Map2D<MapTile>) {
             let tile_cost = cost + tile.weight;
             if tile_cost < tile.cost {
                 adiacent.push(Reverse((tile_cost, *nx, *ny)));
+            }
+        }
+    }
+}
+
+#[allow(dead_code)]
+fn astar_solve(map: &mut Map2D<MapTile>) {
+    type MapTileRef = Reverse<(u64, u64, usize, usize)>;
+    fn dist(x: usize, y: usize, x2: usize, y2: usize) -> u64 {
+        (y2 - y + x2 - x - 2) as u64
+    }
+
+    let mut adiacent = BinaryHeap::<MapTileRef>::new();
+    adiacent.push(Reverse((dist(0, 0, map.width(), map.height()), 0, 0, 0)));
+
+    while let Some(Reverse((_, cost, x, y))) = adiacent.pop() {
+        let tile = map.get_mut(x, y);
+
+        if cost >= tile.cost {
+            continue;
+        }
+
+        tile.cost = cost;
+
+        if x == map.width() - 1 && y == map.height() - 1 {
+            break;
+        }
+
+        for (nx, ny) in map.neighbours4_coords(x, y).iter() {
+            let tile = map.get(*nx, *ny);
+            let tile_cost = cost + tile.weight;
+            if tile_cost < tile.cost {
+                let heur = tile_cost + dist(*nx, *ny, map.width(), map.height());
+                adiacent.push(Reverse((heur, tile_cost, *nx, *ny)));
             }
         }
     }
