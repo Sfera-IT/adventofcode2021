@@ -26,25 +26,23 @@ fn djikstra_solve(map: &mut Map2D<MapTile>) {
     adiacent.push(Reverse((0, 0, 0)));
 
     while let Some(Reverse((cost, x, y))) = adiacent.pop() {
-        {
-            let tile = map.get_mut(x, y);
+        let tile = map.get_mut(x, y);
 
-            if cost >= tile.cost {
-                continue;
-            }
+        if cost >= tile.cost {
+            continue;
+        }
 
-            tile.cost = cost;
+        tile.cost = cost;
 
-            if x == map.width() - 1 && y == map.height() - 1 {
-                break;
-            }
+        if x == map.width() - 1 && y == map.height() - 1 {
+            break;
         }
 
         for (nx, ny) in map.neighbours4_coords(x, y).iter() {
             let tile = map.get(*nx, *ny);
             let tile_cost = cost + tile.weight;
             if tile_cost < tile.cost {
-                adiacent.push(Reverse((cost + tile.weight, *nx, *ny)));
+                adiacent.push(Reverse((tile_cost, *nx, *ny)));
             }
         }
     }
