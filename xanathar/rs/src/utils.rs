@@ -86,6 +86,10 @@ impl<T> Map2D<T> {
         &self.map[y][x]
     }
 
+    pub fn get_mut(&mut self, x: usize, y: usize) -> &mut T {
+        &mut self.map[y][x]
+    }
+
     pub fn set(&mut self, x: usize, y: usize, v: T) {
         self.map[y][x] = v;
     }
@@ -189,6 +193,19 @@ impl<T> Map2D<T> {
         if let Some(v) = self.at(x + 1, y) { res.push(v); }
         if let Some(v) = self.at(x, y - 1) { res.push(v); }
         if let Some(v) = self.at(x, y + 1) { res.push(v); }
+
+        res
+    }
+
+    pub fn neighbours4_coords(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
+        let mut res = Vec::new();
+        let x = x as isize;
+        let y = y as isize;
+
+        if self.at(x - 1, y).is_some() { res.push(((x - 1) as usize, y as usize)); }
+        if self.at(x + 1, y).is_some() { res.push(((x + 1) as usize, y as usize)); }
+        if self.at(x, y - 1).is_some() { res.push((x as usize, (y - 1)  as usize)); }
+        if self.at(x, y + 1).is_some() { res.push((x as usize, (y + 1)  as usize)); }
 
         res
     }
