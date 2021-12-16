@@ -1,5 +1,4 @@
-import * as fs from 'fs';
-import {uniqBy, maxBy, forEach} from 'lodash';
+import {forEach} from 'lodash';
 
 export function hexToBinary(hex: string): string {
     return hex.split('').map(function (c) {
@@ -7,136 +6,113 @@ export function hexToBinary(hex: string): string {
     }).join('');
 }
 
-export class Decoder {
-    public packets: Packet[] = [];
-    public state: State;
-
-    constructor() {
-        this.state = new TypeState(this);
+export class PacketDecoder {
+    get sumVersion(): number {
+        return this._sumVersion;
     }
+    private binData: string;
+
     /**
-     * Pushes a single char and try to decode a packet.
-     * @param hex
+     * Operator packets have operations that should be performed on arrays of internal packet.
      */
-    public pushChar(hex: string): void {
-        forEach(hex, (c) => {
-            let binary = hexToBinary(c);
-            this.state = this.state.Add(binary);
+    private operators: Map<number, { (data: number[]): number; }>  = new Map();
+
+    constructor(data: string) {
+        this.binData = hexToBinary(data);
+
+        this.operators.set(0 , (data: number[]) => {
+            return data.reduce((a, b) => a + b, 0);
+        });
+        this.operators.set(1 , (data: number[]) => {
+            return data.reduce((a, b) => a * b, 1);
+        });
+        this.operators.set(2 , (data: number[]) => {
+            return Math.min.apply(null, data);
+        });
+        this.operators.set(3 , (data: number[]) => {
+            return Math.max.apply(null, data);
+        });
+        this.operators.set(5 , (data: number[]) => {
+            return data[0] > data[1] ? 1 : 0;
+        });
+        this.operators.set(6 , (data: number[]) => {
+            return data[0] < data[1] ? 1 : 0;
+        });
+        this.operators.set(7 , (data: number[]) => {
+            return data[0] === data[1] ? 1 : 0;
         });
     }
 
-}
+    private _sumVersion: number = 0;
+    private _result: number = 0;
+    private _currentIndex = 0;
 
-/**
- * An abstract class that is capabpe of decoding a packet
- */
-abstract class State {
-    protected _stream = "";
+    decode(): number {
+        // we are at the beginning of a packet grab type and version
+        const version = parseInt(this.binData.substring(this._currentIndex, this._currentIndex + 3), 2);
+        const type = parseInt(this.binData.substring(this._currentIndex + 3, this._currentIndex + 6), 2);
+        this._currentIndex += 6;
+        this._sumVersion += version;
+        if (type == 4) {
+            // we need to cycle to grab all the numbers
+            let num: string = '';
+            let bit: string = '';
+            do {
+                num += this.binData.substring(this._currentIndex + 1, this._currentIndex + 5);
+                bit = this.binData[this._currentIndex];
+                this._currentIndex += 5;
+            } while (bit === '1');
+            // number packet is multiple of 4 so we need to pad it
+            const number = parseInt(num, 2);
+            const pad = num.length % (num.length / 4)
+            this._currentIndex += pad;
+            return number;
+        } else {
+            // this is an operator packet
+            const lengthType = this.binData[this._currentIndex++];
+            if (lengthType === '0') {
+                //we have a subsequent 15 bytes that indicates the length of the subpackets.
+                const subsequentPacketLength = parseInt(
+                    this.binData.substring(
+                        this._currentIndex,
+                        this._currentIndex + 15),
+                    2);
+                // we need to parse the subsequent packets
+                this._currentIndex+=15;
+                const stopPackets = this._currentIndex + subsequentPacketLength;
+                // ok we know that we need to parse until we reach stopPackets
+                const subPackets: number[] = [];
+                while (this._currentIndex < stopPackets) {
+                    subPackets.push( this.decode());
+                }
 
-    constructor(protected decoder: Decoder) {
-    }
+                const operator = this.operators.get(type) as { (data: number[]): number; };
+                if (operator == undefined)
+                    return 0;
+                return operator(subPackets);
+            } else {
+                //we have a subsequent 11 bytes that indicates how many subpackets we have
+                const subsequentNumberOfPackets = parseInt(
+                    this.binData.substring(
+                        this._currentIndex,
+                        this._currentIndex + 11),
+                    2);
+                // we need to parse the subsequent packets
+                this._currentIndex+=11;
+                const subPackets: number[] = [];
+                for (let i = 0; i < subsequentNumberOfPackets; i++) {
+                    subPackets.push( this.decode());
+                }
 
-    public Add(binString: string): State {
-        this._stream += binString;
-        return this.onParse();
-    }
-
-    abstract onParse() : State
-
-    public get stream(): string {
-        return this._stream;
-    }
-}
-
-/***
- * The state that is used when we are waiting for the start of a packet
- */
-export class TypeState extends State {
-
-    constructor(protected decoder: Decoder) {
-        super(decoder);
-    }
-
-    onParse(): State {
-        // if we have not enough chars, continue to parse
-        if (this._stream.length < 8) {
-            return this;
-        }
-
-        const version = parseInt(this._stream.substring(0, 3), 2);
-        const type = parseInt(this._stream.substring(3, 6), 2);
-        if (type == 4)
-        {
-            return new PacketLiteralState(this.decoder, version, this._stream.substring(6, 10000))
-        }
-        return new PacketOperatorState(this.decoder, version, this._stream.substring(6, 10000) );
-    }
-}
-
-export class PacketLiteralState extends State {
-
-    public packet: LiteralPacket;
-    private _databin: string = "";
-    constructor(decoder: Decoder, version: number, remaining: string) {
-        super(decoder);
-        this._stream = remaining;
-        this.packet = new LiteralPacket(version, 4)
-        this.decoder.packets.push(this.packet);
-    }
-
-    onParse(): State {
-        if (this._stream.length < 5) {
-            return this;
-        }
-        // ok now we cycle until we have more than 5 char
-        while (this._stream.length > 4) {
-            this._databin += this._stream.substring(1, 5);
-            // is this the last piece of the packet?
-            if (this._stream.charAt(0) == '0') {
-                this.packet.data = parseInt(this._databin, 2);
-                // we finished decoding this packet, so we can return to the type state
-                return new TypeState(this.decoder);
+                const operator = this.operators.get(type) as { (data: number[]): number; };
+                if (operator == undefined)
+                    return 0;
+                return operator(subPackets);
             }
-            this._stream = this._stream.substring(5, 10000);
         }
-        return this;
+        return 0;
     }
 }
 
-export class PacketOperatorState extends State {
-
-    public packet: OperatorPacket;
-
-    constructor(decoder: Decoder, version: number, remaining: string) {
-        super(decoder);
-        this._stream = remaining;
-        this.packet = new OperatorPacket(version, 4)
-        this.decoder.packets.push(this.packet);
-    }
-
-    onParse(): State {
-
-        return this;
-    }
-}
-
-export class Packet {
-    public version: number;
-    public type: number;
-
-    constructor(version: number, type: number) {
-        this.version = version;
-        this.type = type;
-    }
-
-}
-
-export class LiteralPacket extends Packet {
-    public data?: number
-}
-
-export class OperatorPacket extends Packet {
-    public packets: Packet[] = []; // operator packet contains other packets.
-}
 
 
