@@ -1,9 +1,5 @@
 use std::iter::Iterator;
-use std::collections::{HashMap, HashSet, VecDeque, BTreeSet, BTreeMap};
-use regex::Regex;
-use lazy_static::lazy_static;
 use std::ops::RangeInclusive;
-use crate::utils;
 
 // I guess the difficulty here would be to define when to stop, except trying 2 million times
 // is plenty enough and quick enough. Meh, not happy.
