@@ -11,6 +11,7 @@ use std::ops::{Add, Sub};
 // Supersloppy: only 24 of these are geometrically sound, but all 48 are used
 // because there are no false positives in the dataset
 #[derive(Copy, Clone, PartialEq, Debug, Eq, Hash)]
+#[allow(clippy::upper_case_acronyms)]
 enum Rotation {
     RXY, RXy, RXZ, RXz, RxZ, Rxz, RxY, Rxy,
     RYX, RYx, RYZ, RYz, RyZ, Ryz, RyX, Ryx,

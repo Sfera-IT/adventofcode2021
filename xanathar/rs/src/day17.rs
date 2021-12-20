@@ -5,6 +5,7 @@ use std::ops::RangeInclusive;
 // is plenty enough and quick enough. Meh, not happy.
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 struct HitData {
     pub velocity: Vector,
     pub time: u64,

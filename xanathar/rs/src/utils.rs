@@ -46,6 +46,16 @@ impl<T> Map2D<T> {
         }
     }
 
+    pub fn from_strs(lines: &[String], parser: impl Fn(&str) -> Box<[T]>) -> Self {
+        let map = lines.iter().map(|l| parser(l)).collect::<Vec<Box<[T]>>>();
+        let width = map[0].len();
+        let height = map.len();
+
+        Map2D {
+            map, width, height,
+        }
+    }
+
     pub fn load(filename: &str, parser: impl Fn(String) -> Box<[T]>) -> Self {
         let map = parse_lines(filename, |s| Some(parser(s)));
         let width = map[0].len();
